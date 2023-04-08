@@ -1,1 +1,1 @@
-# regret_algorithms
+# Gamebots
