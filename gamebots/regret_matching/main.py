@@ -2,83 +2,9 @@ from typing import Union
 
 import numpy as np
 
-
-class Action(int):
-    pass
-
-
-class State(int):
-    is_end = False
-
-    def __new__(cls, val=None, is_end: bool = False, *args, **kwargs):
-        object = super().__new__(cls, val, *args, **kwargs)
-        object.is_end = is_end
-        return object
-
-
-class GameState(State):
-    pass
-
-
-class InfoState(State):
-    pass
-
-
-class Strategy:
-    def update_strategy(self):
-        pass
-
-    def act(self, info_state: InfoState):
-        pass
-
-
-class RegretMatchingStrategy:
-    """
-                            update                                -> act
-    (accumulate_regret -> update_strategy -> accumulate_strategy) -> act
-    """
-    def __init__(self, num_info_states, num_actions):
-        self.num_info_states = num_info_states
-        self.num_actions = num_actions
-
-        self.strategy = np.zeros((num_info_states, num_actions))
-        self.cumulative_regret = np.zeros((num_info_states, num_actions))
-        self.cumulative_strategy = np.zeros((num_info_states, num_actions))
-
-        # Initialize with dummy zero regrets
-        self.update(regret=np.zeros_like(self.strategy))
-
-    def act(self, info_state: InfoState) -> Action:
-        action = Action(np.random.choice(self.num_actions, p=self.strategy[info_state]))
-        return action
-
-    def update(self, regret):
-        self.accumulate_regret(regret)
-        self.update_strategy()
-        self.accumulate_strategy()
-
-    def accumulate_regret(self, regret):
-        self.cumulative_regret += regret
-
-    def use_average_strategy(self):
-        self.strategy = self.cumulative_strategy / self.cumulative_strategy.sum(axis=1)
-        self.normalize_strategy()
-
-    def update_strategy(self):
-        # Ignore actions with negative regret
-        self.strategy = np.clip(self.cumulative_regret, a_min=0, a_max=None, out=self.strategy)
-        self.normalize_strategy()
-
-    def normalize_strategy(self):
-        strategy_sums = self.strategy.sum(axis=1)
-        nonzero_sums = strategy_sums[strategy_sums != 0]
-        if nonzero_sums.size != 0:
-            self.strategy[strategy_sums != 0] /= nonzero_sums
-        # Use uniform strategy if all zeros
-        self.strategy[strategy_sums == 0] = 1.0 / self.num_actions
-
-    def accumulate_strategy(self):
-        self.cumulative_strategy += self.strategy
+from gamebots.components.actions import Action
+from gamebots.components.states import GameState, InfoState
+from gamebots.components.strategies import Strategy, RegretStrategy
 
 
 class Player:
@@ -158,11 +84,11 @@ class RPSGame(Game):
         self.actions = [self.rock, self.paper, self.scissors]
         self.states = [GameState(0), GameState(1, is_end=True)]
         self.state_idx = 0
-        self.player1 = Player(strategy=RegretMatchingStrategy(
+        self.player1 = Player(strategy=RegretStrategy(
             num_info_states=1,
             num_actions=len(self.actions)
         ))
-        self.player2 = Player(strategy=RegretMatchingStrategy(
+        self.player2 = Player(strategy=RegretStrategy(
             num_info_states=1,
             num_actions=len(self.actions)
         ))
