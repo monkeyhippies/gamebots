@@ -176,8 +176,8 @@ print(strategy.strategy * 100)
 # player 2 strategy
 np.isclose = partial(np.isclose, atol=.02)
 assert all(np.isclose(strategy.strategy[5], np.array([0, 1]))) # Node, card: 1K
-assert all(np.isclose(strategy.strategy[8], np.array([0, 1]))) # Node, card: 1K
-assert all(np.isclose(strategy.strategy[4], np.array([1, 0]))) # Node, card: 1K
-assert all(np.isclose(strategy.strategy[7], np.array([2/3, 1/3]))) # Node, card: 1K
-assert all(np.isclose(strategy.strategy[3], np.array([2/3, 1/3]))) # Node, card: 1K
-assert all(np.isclose(strategy.strategy[6], np.array([1, 0]))) # Node, card: 1K
+assert all(np.isclose(strategy.strategy[8], np.array([0, 1]))) # Node, card: 2K
+assert all(np.isclose(strategy.strategy[4], np.array([1, 0]))) # Node, card: 1Q
+assert all(np.isclose(strategy.strategy[7], np.array([2/3, 1/3]))) # Node, card: 2Q
+assert all(np.isclose(strategy.strategy[3], np.array([2/3, 1/3]))) # Node, card: 1J
+assert all(np.isclose(strategy.strategy[6], np.array([1, 0]))) # Node, card: 2J
