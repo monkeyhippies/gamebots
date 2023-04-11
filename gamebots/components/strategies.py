@@ -43,7 +43,7 @@ class RegretStrategy(Strategy):
         self.cumulative_regret += regret
 
     def use_average_strategy(self):
-        self.strategy = self.cumulative_strategy / self.cumulative_strategy.sum(axis=1)
+        self.strategy = self.cumulative_strategy / self.cumulative_strategy.sum(axis=1, keepdims=True)
         self.normalize_strategy()
 
     def update_strategy(self):
@@ -53,7 +53,7 @@ class RegretStrategy(Strategy):
 
     def normalize_strategy(self):
         strategy_sums = self.strategy.sum(axis=1)
-        nonzero_sums = strategy_sums[strategy_sums != 0]
+        nonzero_sums = strategy_sums[strategy_sums != 0][:, None]
         if nonzero_sums.size != 0:
             self.strategy[strategy_sums != 0] /= nonzero_sums
         # Use uniform strategy if all zeros
